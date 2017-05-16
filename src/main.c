@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 /*
   Function Declarations for builtin shell commands:
@@ -22,6 +23,7 @@
 int lsh_cd(char **args);
 int lsh_help(char **args);
 int lsh_exit(char **args);
+char *get_current_directory();
 
 /*
   List of builtin commands, followed by their corresponding functions.
@@ -91,6 +93,22 @@ int lsh_help(char **args)
 int lsh_exit(char **args)
 {
   return 0;
+}
+
+char *get_current_directory()
+{
+  char *cwd;
+  cwd = getcwd(0, 0);
+  if (!cwd)
+  {
+    fprintf(stderr, "getcwd failed: %s\n", strerror(errno));
+    return "";
+  }
+  else
+  {
+    return cwd;
+    free(cwd);
+  }
 }
 
 /**
@@ -239,7 +257,8 @@ void lsh_loop(void)
   int status;
 
   do {
-    printf("> ");
+    char *current_directory = get_current_directory();
+    printf("%s", strcat(current_directory, "> "));
     line = lsh_read_line();
     args = lsh_split_line(line);
     status = lsh_execute(args);

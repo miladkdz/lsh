@@ -105,9 +105,8 @@ char *get_current_directory()
     return "";
   }
   else
-  {
-    return cwd;
-    free(cwd);
+  {    
+    return cwd;    
   }
 }
 
@@ -258,13 +257,14 @@ void lsh_loop(void)
 
   do {
     char *current_directory = get_current_directory();
-    printf("%s", strcat(current_directory, "> "));
+    printf("%s> ", current_directory);
     line = lsh_read_line();
     args = lsh_split_line(line);
     status = lsh_execute(args);
 
     free(line);
     free(args);
+    free(cwd);
   } while (status);
 }
 
